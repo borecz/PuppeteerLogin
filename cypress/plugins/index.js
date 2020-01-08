@@ -11,7 +11,7 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 const webpack = require('@cypress/webpack-preprocessor')
-const { PuppeteerLogin } = require('../integration/login.plugin')
+const { PuppeteerLogin } = require('./login.plugin')
 
 module.exports = (on, config) => {
   const options = {
@@ -20,6 +20,13 @@ module.exports = (on, config) => {
     webpackOptions: require('../../webpack.config'),
     watchOptions: {}
   }
+  // this will work with any version under 3.5, for > you need another approach
+  on('before:browser:launch', (browser = { headless: true }, args) => {
+    if (browser.name === 'chrome' || browser.name === 'chromium') {
+      args.push('--remote-debugging-port=9222');
+    }
+    return args;
+  });
   on('file:preprocessor', webpack(options))
   on('task', {
     'Login': PuppeteerLogin

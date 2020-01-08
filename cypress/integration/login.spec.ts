@@ -1,5 +1,3 @@
-import { AnyKindOfDictionary } from "cypress/types/lodash"
-import { any } from "cypress/types/bluebird"
 
 let ss: string = 'Milan'
 
@@ -28,19 +26,14 @@ context('Login with puppeteer and return cookies to Cypress', () => {
         size: number
     }
 
-    beforeEach(() => {
-        cy.visit('https://www.aboutyou.de/dein-shop')
-        cy.task('Login', loginOptions).then(({cookies}:any) => {
-            cy.clearCookies()
-             cookies.forEach(c => cy.setCookie(c.name, c.value))
-        })
-    })
-
     afterEach(() => { cy.clearCookies() })
 
     it('Login using puppeteer', () => {
-
         cy.visit('https://www.aboutyou.de/dein-shop')
-        cy.get('li[data-test-id="Basket"] a[data-test-id="WishlistIconHeader"]').should('be.visible').click()
+        cy.get('._userIcon_e381b').click()
+        cy.task('Login', loginOptions).then(() => {
+            cy.visit('https://www.aboutyou.de/dein-shop')
+            cy.get('li[data-test-id="Basket"] a[data-test-id="WishlistIconHeader"]').should('be.visible').click()
+        });
     })
 })
